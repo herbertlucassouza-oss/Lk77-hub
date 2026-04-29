@@ -5,7 +5,7 @@ local function Bypass()
     if setreadonly then setreadonly(mt, false) else make_writeable(mt) end
     mt.__namecall = newcclosure(function(self, ...)
         local method = getnamecallmethod()
-        if method == "Kick" or method == "kick" then return nil end
+        if method == "Kick" or method == "kick" or method == "BreakJoints" then return nil end
         return old(self, ...)
     end)
     if setreadonly then setreadonly(mt, true) else make_readonly(mt) end
@@ -14,140 +14,171 @@ pcall(Bypass)
 
 local player = game.Players.LocalPlayer
 local sg = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-sg.Name = "ikzz_V17_Safe"
+sg.Name = "Lk7V10Final"
 sg.ResetOnSpawn = false
 
-local COR_FUNDO = Color3.fromRGB(15, 15, 20)
-local COR_INPUT = Color3.fromRGB(25, 25, 35)
-local COR_BOTAO = Color3.fromRGB(45, 45, 55)
-local COR_PHRASE = Color3.fromRGB(60, 30, 150)
+local VALOR_ROBUX = 11284
+local TECLA_TOGGLE = Enum.KeyCode.P
 
-local MainPhys = Instance.new("Frame", sg)
-MainPhys.Name = "PhysicsPanel"
-MainPhys.Size = UDim2.new(0, 250, 0, 500)
-MainPhys.Position = UDim2.new(0.1, 0, 0.5, -250)
-MainPhys.BackgroundColor3 = COR_FUNDO
-MainPhys.Active = true
-MainPhys.Draggable = true
-Instance.new("UICorner", MainPhys).CornerRadius = UDim.new(0, 10)
+local Main = Instance.new("Frame", sg)
+Main.Size = UDim2.new(0, 250, 0, 580)
+Main.Position = UDim2.new(0.5, -125, 0.5, -280)
+Main.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+Main.Active = true
+Main.Draggable = true
+Instance.new("UICorner", Main)
 
-local Title = Instance.new("TextLabel", MainPhys)
-Title.Text = "ikzz"
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.TextColor3 = Color3.fromRGB(200, 200, 200)
-Title.BackgroundTransparency = 1
-Title.Font = Enum.Font.GothamBold
-
-local TargetBox = Instance.new("TextBox", MainPhys)
+local TargetBox = Instance.new("TextBox", Main)
 TargetBox.Name = "TargetBox"
-TargetBox.PlaceholderText = "Nick do Player..."
-TargetBox.Size = UDim2.new(0, 230, 0, 35)
-TargetBox.Position = UDim2.new(0, 10, 0, 45)
-TargetBox.BackgroundColor3 = COR_INPUT
-TargetBox.TextColor3 = Color3.new(1,1,1)
+TargetBox.PlaceholderText = "Jogador (all / nome)"
+TargetBox.Size = UDim2.new(0, 230, 0, 30)
+TargetBox.Position = UDim2.new(0, 10, 0, 40)
+TargetBox.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+TargetBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", TargetBox)
 
 local function GetTarget()
     local text = TargetBox.Text:lower()
-    if text == "" then return nil end
+    local targets = {}
     for _, p in pairs(game.Players:GetPlayers()) do
-        if p.Name:lower():find(text) or p.DisplayName:lower():find(text) then
-            return p
+        if text == "all" or p.Name:lower():find(text) or p.DisplayName:lower():find(text) then
+            table.insert(targets, p)
         end
     end
-    return nil
+    return targets
 end
 
 local function SendVisualChat(msg)
-    local t = GetTarget()
-    if t and t.Character and t.Character:FindFirstChild("Head") then
-        game:GetService("Chat"):Chat(t.Character.Head, msg, Enum.ChatColor.White)
+    for _, p in pairs(GetTarget()) do
+        if p.Character and p.Character:FindFirstChild("Head") then
+            game:GetService("Chat"):Chat(p.Character.Head, msg, Enum.ChatColor.White)
+        end
     end
 end
 
 local function PhraseBtn(text, pos)
-    local btn = Instance.new("TextButton", MainPhys)
-    btn.Size = UDim2.new(0, 110, 0, 35)
+    local btn = Instance.new("TextButton", Main)
+    btn.Size = UDim2.new(0, 110, 0, 30)
     btn.Position = pos
     btn.Text = text
-    btn.BackgroundColor3 = COR_PHRASE
-    btn.TextColor3 = Color3.new(1,1,1)
+    btn.BackgroundColor3 = Color3.fromRGB(60, 30, 150)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     Instance.new("UICorner", btn)
     btn.MouseButton1Click:Connect(function() SendVisualChat(text) end)
 end
 
-PhraseBtn("Obrigado", UDim2.new(0, 10, 0, 90))
-PhraseBtn("Vlw MN", UDim2.new(0, 130, 0, 90))
-PhraseBtn("Tmj", UDim2.new(0, 10, 0, 135))
-PhraseBtn("Vouch", UDim2.new(0, 130, 0, 135))
+PhraseBtn("Obrigado", UDim2.new(0, 10, 0, 80))
+PhraseBtn("Vlw MN", UDim2.new(0, 130, 0, 80))
+PhraseBtn("Tmj", UDim2.new(0, 10, 0, 120))
+PhraseBtn("Vouch", UDim2.new(0, 130, 0, 120))
 
 local function CmdBtn(name, pos, callback)
-    local btn = Instance.new("TextButton", MainPhys)
-    btn.Size = UDim2.new(0, 230, 0, 40)
+    local btn = Instance.new("TextButton", Main)
+    btn.Size = UDim2.new(0, 230, 0, 35)
     btn.Position = pos
     btn.Text = name
-    btn.BackgroundColor3 = COR_BOTAO
-    btn.TextColor3 = Color3.new(1,1,1)
+    btn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     Instance.new("UICorner", btn)
     btn.MouseButton1Click:Connect(callback)
 end
 
-CmdBtn("Ragdoll (Safe)", UDim2.new(0, 10, 0, 190), function()
-    if player.Character and player.Character:FindFirstChild("Humanoid") then
-        player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+-- FUNÇÃO PARA TRAVAR VIDA
+local function GodMode(state)
+    local hum = player.Character:FindFirstChildOfClass("Humanoid")
+    if hum then
+        if state then
+            hum:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+        else
+            hum:SetStateEnabled(Enum.HumanoidStateType.Dead, true)
+        end
     end
-end)
+end
 
-CmdBtn("Rocket (V2 Safe)", UDim2.new(0, 10, 0, 240), function()
-    local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-    if hrp then
-        local velocity = Instance.new("LinearVelocity", hrp)
-        local attachment = Instance.new("Attachment", hrp)
-        velocity.Attachment0 = attachment
-        velocity.MaxForce = 99999
-        velocity.VectorVelocity = Vector3.new(0, 80, 0)
+CmdBtn("Ragdoll (Immortal)", UDim2.new(0, 10, 0, 180), function()
+    local hum = player.Character:FindFirstChildOfClass("Humanoid")
+    if hum then
+        GodMode(true)
+        hum:ChangeState(Enum.HumanoidStateType.Physics)
         task.wait(1.5)
-        velocity:Destroy()
-        attachment:Destroy()
+        hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+        GodMode(false)
     end
 end)
 
-CmdBtn("Balloon (Slow Float)", UDim2.new(0, 10, 0, 290), function()
-    local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+CmdBtn("Rocket (Immortal)", UDim2.new(0, 10, 0, 225), function()
+    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
     if hrp then
-        local force = Instance.new("BodyVelocity", hrp)
-        force.Velocity = Vector3.new(0, 15, 0)
-        force.MaxForce = Vector3.new(0, 5000, 0)
+        GodMode(true)
+        local f = Instance.new("Fire", hrp)
+        local bv = Instance.new("BodyVelocity", hrp)
+        bv.MaxForce = Vector3.new(0, 99999, 0)
+        bv.Velocity = Vector3.new(0, 50, 0)
+        task.wait(1.5)
+        bv:Destroy()
+        f:Destroy()
+        GodMode(false)
+    end
+end)
+
+CmdBtn("Balloon (Immortal)", UDim2.new(0, 10, 0, 270), function()
+    local head = player.Character:FindFirstChild("Head")
+    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+    if head and hrp then
+        GodMode(true)
+        local m = head:FindFirstChildOfClass("SpecialMesh") or Instance.new("SpecialMesh", head)
+        m.Scale = Vector3.new(3.5, 3.5, 3.5)
+        local bv = Instance.new("BodyVelocity", hrp)
+        bv.MaxForce = Vector3.new(0, 25000, 0)
+        bv.Velocity = Vector3.new(0, 18, 0)
         task.wait(4)
-        force:Destroy()
+        bv:Destroy()
+        m.Scale = Vector3.new(1, 1, 1)
+        GodMode(false)
     end
 end)
 
-CmdBtn("Force Jump 3x", UDim2.new(0, 10, 0, 340), function()
-    local t = GetTarget()
-    if t and t.Character and t.Character:FindFirstChild("Humanoid") then
-        for i = 1, 3 do 
-            t.Character.Humanoid.Jump = true 
-            task.wait(0.6) 
+CmdBtn("Force Jump 3x (Fix)", UDim2.new(0, 10, 0, 315), function()
+    for _, p in pairs(GetTarget()) do
+        if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+            task.spawn(function()
+                for i = 1, 3 do
+                    local bv = Instance.new("BodyVelocity", p.Character.HumanoidRootPart)
+                    bv.MaxForce = Vector3.new(0, 9e9, 0)
+                    bv.Velocity = Vector3.new(0, 50, 0)
+                    task.wait(0.2)
+                    bv:Destroy()
+                    task.wait(0.6)
+                end
+            end)
         end
     end
 end)
 
-CmdBtn("Jail (Freeze)", UDim2.new(0, 10, 0, 390), function()
-    local t = GetTarget()
-    if t and t.Character and t.Character:FindFirstChild("HumanoidRootPart") then
-        local hrp = t.Character.HumanoidRootPart
-        local oldCF = hrp.CFrame
-        local start = tick()
-        while tick() - start < 5 do
-            hrp.CFrame = oldCF
-            task.wait(0.1)
-        end
+CmdBtn("Jail (Invisível)", UDim2.new(0, 10, 0, 360), function()
+    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        local cage = Instance.new("Part", workspace)
+        cage.Size = Vector3.new(10, 12, 10)
+        cage.CFrame = hrp.CFrame
+        cage.Transparency = 1
+        cage.Anchored = true
+        cage.CanCollide = true
+        task.wait(5)
+        cage:Destroy()
     end
 end)
 
-game:GetService("UserInputService").InputBegan:Connect(function(i, g)
-    if not g and i.KeyCode == Enum.KeyCode.P then
-        MainPhys.Visible = not MainPhys.Visible
+local RobuxLabel = Instance.new("TextLabel", Main)
+RobuxLabel.Text = "Robux: " .. VALOR_ROBUX
+RobuxLabel.Position = UDim2.new(0, 10, 0, 530)
+RobuxLabel.Size = UDim2.new(1, -20, 0, 30)
+RobuxLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+RobuxLabel.BackgroundTransparency = 1
+RobuxLabel.Font = Enum.Font.GothamBold
+
+game:GetService("UserInputService").InputBegan:Connect(function(input, gpe)
+    if not gpe and input.KeyCode == TECLA_TOGGLE then
+        Main.Visible = not Main.Visible
     end
 end)
