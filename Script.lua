@@ -1,4 +1,4 @@
-    local function Bypass()
+local function Bypass()
     local g = game
     local mt = getrawmetatable(g)
     local old = mt.__namecall
@@ -14,7 +14,7 @@ pcall(Bypass)
 
 local player = game.Players.LocalPlayer
 local sg = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-sg.Name = "Lk7V9God"
+sg.Name = "Lk7V10Final"
 sg.ResetOnSpawn = false
 
 local VALOR_ROBUX = 11284
@@ -23,7 +23,7 @@ local TECLA_TOGGLE = Enum.KeyCode.P
 local Main = Instance.new("Frame", sg)
 Main.Size = UDim2.new(0, 250, 0, 580)
 Main.Position = UDim2.new(0.5, -125, 0.5, -280)
-Main.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+Main.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 Main.Active = true
 Main.Draggable = true
 Instance.new("UICorner", Main)
@@ -77,50 +77,68 @@ local function CmdBtn(name, pos, callback)
     btn.Size = UDim2.new(0, 230, 0, 35)
     btn.Position = pos
     btn.Text = name
-    btn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+    btn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     Instance.new("UICorner", btn)
     btn.MouseButton1Click:Connect(callback)
 end
 
-CmdBtn("Ragdoll (No-Kill)", UDim2.new(0, 10, 0, 180), function()
-    local char = player.Character
-    if char and char:FindFirstChild("Humanoid") then
-        char.Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
-        task.wait(1)
-        char.Humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+-- FUNÇÃO PARA TRAVAR VIDA
+local function GodMode(state)
+    local hum = player.Character:FindFirstChildOfClass("Humanoid")
+    if hum then
+        if state then
+            hum:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+        else
+            hum:SetStateEnabled(Enum.HumanoidStateType.Dead, true)
+        end
+    end
+end
+
+CmdBtn("Ragdoll (Immortal)", UDim2.new(0, 10, 0, 180), function()
+    local hum = player.Character:FindFirstChildOfClass("Humanoid")
+    if hum then
+        GodMode(true)
+        hum:ChangeState(Enum.HumanoidStateType.Physics)
+        task.wait(1.5)
+        hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+        GodMode(false)
     end
 end)
 
-CmdBtn("Rocket (Smooth Lift)", UDim2.new(0, 10, 0, 225), function()
+CmdBtn("Rocket (Immortal)", UDim2.new(0, 10, 0, 225), function()
     local hrp = player.Character:FindFirstChild("HumanoidRootPart")
     if hrp then
+        GodMode(true)
         local f = Instance.new("Fire", hrp)
         local bv = Instance.new("BodyVelocity", hrp)
-        bv.MaxForce = Vector3.new(0, 50000, 0)
-        bv.Velocity = Vector3.new(0, 40, 0)
+        bv.MaxForce = Vector3.new(0, 99999, 0)
+        bv.Velocity = Vector3.new(0, 50, 0)
         task.wait(1.5)
         bv:Destroy()
         f:Destroy()
+        GodMode(false)
     end
 end)
 
-CmdBtn("Balloon (Anti-Death)", UDim2.new(0, 10, 0, 270), function()
+CmdBtn("Balloon (Immortal)", UDim2.new(0, 10, 0, 270), function()
     local head = player.Character:FindFirstChild("Head")
     local hrp = player.Character:FindFirstChild("HumanoidRootPart")
     if head and hrp then
+        GodMode(true)
         local m = head:FindFirstChildOfClass("SpecialMesh") or Instance.new("SpecialMesh", head)
         m.Scale = Vector3.new(3.5, 3.5, 3.5)
         local bv = Instance.new("BodyVelocity", hrp)
-        bv.MaxForce = Vector3.new(0, 20000, 0)
-        bv.Velocity = Vector3.new(0, 15, 0)
+        bv.MaxForce = Vector3.new(0, 25000, 0)
+        bv.Velocity = Vector3.new(0, 18, 0)
         task.wait(4)
         bv:Destroy()
         m.Scale = Vector3.new(1, 1, 1)
+        GodMode(false)
     end
 end)
 
-CmdBtn("Force Jump 3x (Final)", UDim2.new(0, 10, 0, 315), function()
+CmdBtn("Force Jump 3x (Fix)", UDim2.new(0, 10, 0, 315), function()
     for _, p in pairs(GetTarget()) do
         if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
             task.spawn(function()
