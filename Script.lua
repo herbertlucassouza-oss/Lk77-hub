@@ -5,6 +5,7 @@ if setreadonly then setreadonly(mt, false) else make_writeable(mt) end
 mt.__namecall = newcclosure(function(self, ...)
     local method = getnamecallmethod()
     if method == "Kick" or method == "kick" then
+        warn("Tentativa de Kick bloqueada!")
         return nil
     end
     return old(self, ...)
@@ -14,15 +15,15 @@ if setreadonly then setreadonly(mt, true) else make_readonly(mt) end
 
 local player = game.Players.LocalPlayer
 local sg = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-sg.Name = "Lk7Hub"
+sg.Name = "Lk7HubV4"
 sg.ResetOnSpawn = false
 
 local VALOR_ROBUX = 11284
 local TECLA_TOGGLE = Enum.KeyCode.P
 
 local Main = Instance.new("Frame", sg)
-Main.Size = UDim2.new(0, 250, 0, 480)
-Main.Position = UDim2.new(0.5, -125, 0.5, -240)
+Main.Size = UDim2.new(0, 250, 0, 520)
+Main.Position = UDim2.new(0.5, -125, 0.5, -260)
 Main.BackgroundColor3 = Color3.fromRGB(20, 15, 30)
 Main.BorderSizePixel = 0
 Main.Active = true
@@ -30,7 +31,7 @@ Main.Draggable = true
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 10)
 
 local Title = Instance.new("TextLabel", Main)
-Title.Text = "Fake Robux lk7 - Anti-Kick"
+Title.Text = "Lk7 Hub - Anti-Kick Ativado"
 Title.Size = UDim2.new(1, 0, 0, 30)
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.BackgroundTransparency = 1
@@ -44,13 +45,21 @@ TargetBox.BackgroundColor3 = Color3.fromRGB(40, 30, 50)
 TargetBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", TargetBox)
 
-local function SendVisualChat(msg)
-    local targetText = TargetBox.Text:lower()
+local function GetTarget()
+    local text = TargetBox.Text:lower()
+    local targets = {}
     for _, p in pairs(game.Players:GetPlayers()) do
-        if targetText == "all" or p.Name:lower():find(targetText) then
-            if p.Character and p.Character:FindFirstChild("Head") then
-                game:GetService("Chat"):Chat(p.Character.Head, msg, Enum.ChatColor.White)
-            end
+        if text == "all" or p.Name:lower():find(text) or p.DisplayName:lower():find(text) then
+            table.insert(targets, p)
+        end
+    end
+    return targets
+end
+
+local function SendVisualChat(msg)
+    for _, p in pairs(GetTarget()) do
+        if p.Character and p.Character:FindFirstChild("Head") then
+            game:GetService("Chat"):Chat(p.Character.Head, msg, Enum.ChatColor.White)
         end
     end
 end
@@ -89,9 +98,11 @@ local function CmdBtn(name, pos, callback)
     btn.MouseButton1Click:Connect(callback)
 end
 
-CmdBtn("Ragdoll", UDim2.new(0, 10, 0, 180), function()
+CmdBtn("Ragdoll (Safe Mode)", UDim2.new(0, 10, 0, 180), function()
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+        task.wait(1.5)
+        player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
     end
 end)
 
@@ -102,31 +113,47 @@ CmdBtn("Rocket (Safe)", UDim2.new(0, 10, 0, 225), function()
         local bv = Instance.new("BodyVelocity", hrp)
         bv.Velocity = Vector3.new(0, 40, 0)
         bv.MaxForce = Vector3.new(0, 9000, 0)
-        task.wait(1)
+        task.wait(1.2)
         f:Destroy()
         bv:Destroy()
     end
 end)
 
-CmdBtn("Balloon (Safe)", UDim2.new(0, 10, 0, 270), function()
+CmdBtn("Balloon (Enhanced)", UDim2.new(0, 10, 0, 270), function()
     local head = player.Character:FindFirstChild("Head")
     local hrp = player.Character:FindFirstChild("HumanoidRootPart")
     if head and hrp then
         local m = head:FindFirstChildOfClass("SpecialMesh") or Instance.new("SpecialMesh", head)
-        local old = m.Scale
-        m.Scale = Vector3.new(3, 3, 3)
+        m.Scale = Vector3.new(4, 4, 4)
         local bv = Instance.new("BodyVelocity", hrp)
-        bv.Velocity = Vector3.new(0, 10, 0)
-        bv.MaxForce = Vector3.new(0, 8000, 0)
-        task.wait(3)
-        m.Scale = old
+        bv.Velocity = Vector3.new(0, 12, 0)
+        bv.MaxForce = Vector3.new(0, 10000, 0)
+        task.wait(4)
+        m.Scale = Vector3.new(1, 1, 1)
         bv:Destroy()
+    end
+end)
+
+CmdBtn("Force Jump 3x (Visual)", UDim2.new(0, 10, 0, 315), function()
+    for _, p in pairs(GetTarget()) do
+        if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+            task.spawn(function()
+                for i = 1, 3 do
+                    local bv = Instance.new("BodyVelocity", p.Character.HumanoidRootPart)
+                    bv.Velocity = Vector3.new(0, 35, 0)
+                    bv.MaxForce = Vector3.new(0, 50000, 0)
+                    task.wait(0.15)
+                    bv:Destroy()
+                    task.wait(0.6)
+                end
+            end)
+        end
     end
 end)
 
 local RobuxLabel = Instance.new("TextLabel", Main)
 RobuxLabel.Text = "Robux: " .. VALOR_ROBUX
-RobuxLabel.Position = UDim2.new(0, 10, 0, 440)
+RobuxLabel.Position = UDim2.new(0, 10, 0, 480)
 RobuxLabel.Size = UDim2.new(1, -20, 0, 30)
 RobuxLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
 RobuxLabel.Font = Enum.Font.GothamBold
