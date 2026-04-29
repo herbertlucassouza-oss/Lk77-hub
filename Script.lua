@@ -15,15 +15,15 @@ if setreadonly then setreadonly(mt, true) else make_readonly(mt) end
 
 local player = game.Players.LocalPlayer
 local sg = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-sg.Name = "Lk7HubV4"
+sg.Name = "Lk7HubV5"
 sg.ResetOnSpawn = false
 
 local VALOR_ROBUX = 11284
 local TECLA_TOGGLE = Enum.KeyCode.P
 
 local Main = Instance.new("Frame", sg)
-Main.Size = UDim2.new(0, 250, 0, 520)
-Main.Position = UDim2.new(0.5, -125, 0.5, -260)
+Main.Size = UDim2.new(0, 250, 0, 560)
+Main.Position = UDim2.new(0.5, -125, 0.5, -280)
 Main.BackgroundColor3 = Color3.fromRGB(20, 15, 30)
 Main.BorderSizePixel = 0
 Main.Active = true
@@ -31,7 +31,7 @@ Main.Draggable = true
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 10)
 
 local Title = Instance.new("TextLabel", Main)
-Title.Text = "Lk7 Hub - Anti-Kick Ativado"
+Title.Text = "Lk7 Hub - V5"
 Title.Size = UDim2.new(1, 0, 0, 30)
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.BackgroundTransparency = 1
@@ -98,11 +98,31 @@ local function CmdBtn(name, pos, callback)
     btn.MouseButton1Click:Connect(callback)
 end
 
-CmdBtn("Ragdoll (Safe Mode)", UDim2.new(0, 10, 0, 180), function()
+local function ApplyNoAnimStraight()
+    local char = player.Character
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if hum and hrp then
+        -- Trava animações
+        for _, track in pairs(hum:GetPlayingAnimationTracks()) do
+            track:Stop()
+        end
+        -- Mantém reto
+        local bg = Instance.new("BodyGyro", hrp)
+        bg.P = 9e4
+        bg.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+        bg.CFrame = hrp.CFrame
+        return bg
+    end
+end
+
+CmdBtn("Ragdoll (Straight/NoAnim)", UDim2.new(0, 10, 0, 180), function()
     if player.Character and player.Character:FindFirstChild("Humanoid") then
+        local gyro = ApplyNoAnimStraight()
         player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
-        task.wait(1.5)
+        task.wait(2)
         player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+        if gyro then gyro:Destroy() end
     end
 end)
 
@@ -111,18 +131,21 @@ CmdBtn("Rocket (Safe)", UDim2.new(0, 10, 0, 225), function()
     if hrp then
         local f = Instance.new("Fire", hrp)
         local bv = Instance.new("BodyVelocity", hrp)
+        local gyro = ApplyNoAnimStraight()
         bv.Velocity = Vector3.new(0, 40, 0)
         bv.MaxForce = Vector3.new(0, 9000, 0)
         task.wait(1.2)
         f:Destroy()
         bv:Destroy()
+        if gyro then gyro:Destroy() end
     end
 end)
 
-CmdBtn("Balloon (Enhanced)", UDim2.new(0, 10, 0, 270), function()
+CmdBtn("Balloon (Straight/NoAnim)", UDim2.new(0, 10, 0, 270), function()
     local head = player.Character:FindFirstChild("Head")
     local hrp = player.Character:FindFirstChild("HumanoidRootPart")
     if head and hrp then
+        local gyro = ApplyNoAnimStraight()
         local m = head:FindFirstChildOfClass("SpecialMesh") or Instance.new("SpecialMesh", head)
         m.Scale = Vector3.new(4, 4, 4)
         local bv = Instance.new("BodyVelocity", hrp)
@@ -131,6 +154,7 @@ CmdBtn("Balloon (Enhanced)", UDim2.new(0, 10, 0, 270), function()
         task.wait(4)
         m.Scale = Vector3.new(1, 1, 1)
         bv:Destroy()
+        if gyro then gyro:Destroy() end
     end
 end)
 
@@ -151,9 +175,40 @@ CmdBtn("Force Jump 3x (Visual)", UDim2.new(0, 10, 0, 315), function()
     end
 end)
 
+CmdBtn("Jail (5 Segundos)", UDim2.new(0, 10, 0, 360), function()
+    local char = player.Character
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        local pos = hrp.CFrame
+        local cage = Instance.new("Model", workspace)
+        cage.Name = "VisualJail"
+        
+        local parts = {
+            {s = Vector3.new(10, 1, 10), p = pos * CFrame.new(0, -3.5, 0)},
+            {s = Vector3.new(10, 1, 10), p = pos * CFrame.new(0, 7, 0)},
+            {s = Vector3.new(1, 10, 10), p = pos * CFrame.new(5, 2, 0)},
+            {s = Vector3.new(1, 10, 10), p = pos * CFrame.new(-5, 2, 0)},
+            {s = Vector3.new(10, 10, 1), p = pos * CFrame.new(0, 2, 5)},
+            {s = Vector3.new(10, 10, 1), p = pos * CFrame.new(0, 2, -5)}
+        }
+        
+        for _, v in pairs(parts) do
+            local p = Instance.new("Part", cage)
+            p.Size = v.s
+            p.CFrame = v.p
+            p.Anchored = true
+            p.Transparency = 1
+            p.CastShadow = false
+        end
+        
+        task.wait(5)
+        cage:Destroy()
+    end
+end)
+
 local RobuxLabel = Instance.new("TextLabel", Main)
 RobuxLabel.Text = "Robux: " .. VALOR_ROBUX
-RobuxLabel.Position = UDim2.new(0, 10, 0, 480)
+RobuxLabel.Position = UDim2.new(0, 10, 0, 520)
 RobuxLabel.Size = UDim2.new(1, -20, 0, 30)
 RobuxLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
 RobuxLabel.Font = Enum.Font.GothamBold
