@@ -1,20 +1,6 @@
-local function Bypass()
-    local g = game
-    local mt = getrawmetatable(g)
-    local old = mt.__namecall
-    if setreadonly then setreadonly(mt, false) else make_writeable(mt) end
-    mt.__namecall = newcclosure(function(self, ...)
-        local method = getnamecallmethod()
-        if method == "Kick" or method == "kick" or method == "BreakJoints" then return nil end
-        return old(self, ...)
-    end)
-    if setreadonly then setreadonly(mt, true) else make_readonly(mt) end
-end
-pcall(Bypass)
-
 local player = game.Players.LocalPlayer
 local sg = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-sg.Name = "Lk7V10Final"
+sg.Name = "ikzz_V18_Final"
 sg.ResetOnSpawn = false
 
 local VALOR_ROBUX = 11284
@@ -28,11 +14,18 @@ Main.Active = true
 Main.Draggable = true
 Instance.new("UICorner", Main)
 
+local Title = Instance.new("TextLabel", Main)
+Title.Text = "ikzz HUB"
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.BackgroundTransparency = 1
+Title.Font = Enum.Font.GothamBold
+
 local TargetBox = Instance.new("TextBox", Main)
 TargetBox.Name = "TargetBox"
 TargetBox.PlaceholderText = "Jogador (all / nome)"
 TargetBox.Size = UDim2.new(0, 230, 0, 30)
-TargetBox.Position = UDim2.new(0, 10, 0, 40)
+TargetBox.Position = UDim2.new(0, 10, 0, 45)
 TargetBox.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
 TargetBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", TargetBox)
@@ -40,6 +33,7 @@ Instance.new("UICorner", TargetBox)
 local function GetTarget()
     local text = TargetBox.Text:lower()
     local targets = {}
+    if text == "" then return targets end
     for _, p in pairs(game.Players:GetPlayers()) do
         if text == "all" or p.Name:lower():find(text) or p.DisplayName:lower():find(text) then
             table.insert(targets, p)
@@ -49,9 +43,10 @@ local function GetTarget()
 end
 
 local function SendVisualChat(msg)
-    for _, p in pairs(GetTarget()) do
+    local tList = GetTarget()
+    for _, p in pairs(tList) do
         if p.Character and p.Character:FindFirstChild("Head") then
-            game:GetService("Chat"):Chat(p.Character.Head, msg, Enum.ChatColor.White)
+            game:GetService("Chat"):Chat(p.Character.Head, msg, "White")
         end
     end
 end
@@ -62,15 +57,15 @@ local function PhraseBtn(text, pos)
     btn.Position = pos
     btn.Text = text
     btn.BackgroundColor3 = Color3.fromRGB(60, 30, 150)
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextColor3 = Color3.new(1, 1, 1)
     Instance.new("UICorner", btn)
     btn.MouseButton1Click:Connect(function() SendVisualChat(text) end)
 end
 
-PhraseBtn("Obrigado", UDim2.new(0, 10, 0, 80))
-PhraseBtn("Vlw MN", UDim2.new(0, 130, 0, 80))
-PhraseBtn("Tmj", UDim2.new(0, 10, 0, 120))
-PhraseBtn("Vouch", UDim2.new(0, 130, 0, 120))
+PhraseBtn("Obrigado", UDim2.new(0, 10, 0, 85))
+PhraseBtn("Vlw MN", UDim2.new(0, 130, 0, 85))
+PhraseBtn("Tmj", UDim2.new(0, 10, 0, 125))
+PhraseBtn("Vouch", UDim2.new(0, 130, 0, 125))
 
 local function CmdBtn(name, pos, callback)
     local btn = Instance.new("TextButton", Main)
@@ -78,94 +73,72 @@ local function CmdBtn(name, pos, callback)
     btn.Position = pos
     btn.Text = name
     btn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextColor3 = Color3.new(1, 1, 1)
     Instance.new("UICorner", btn)
     btn.MouseButton1Click:Connect(callback)
 end
 
--- FUNÇÃO PARA TRAVAR VIDA
-local function GodMode(state)
+CmdBtn("Ragdoll (Safe)", UDim2.new(0, 10, 0, 180), function()
     local hum = player.Character:FindFirstChildOfClass("Humanoid")
     if hum then
-        if state then
-            hum:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
-        else
-            hum:SetStateEnabled(Enum.HumanoidStateType.Dead, true)
-        end
-    end
-end
-
-CmdBtn("Ragdoll (Immortal)", UDim2.new(0, 10, 0, 180), function()
-    local hum = player.Character:FindFirstChildOfClass("Humanoid")
-    if hum then
-        GodMode(true)
         hum:ChangeState(Enum.HumanoidStateType.Physics)
-        task.wait(1.5)
+        task.wait(2)
         hum:ChangeState(Enum.HumanoidStateType.GettingUp)
-        GodMode(false)
     end
 end)
 
-CmdBtn("Rocket (Immortal)", UDim2.new(0, 10, 0, 225), function()
+CmdBtn("Rocket (CFrame Path)", UDim2.new(0, 10, 0, 225), function()
     local hrp = player.Character:FindFirstChild("HumanoidRootPart")
     if hrp then
-        GodMode(true)
-        local f = Instance.new("Fire", hrp)
-        local bv = Instance.new("BodyVelocity", hrp)
-        bv.MaxForce = Vector3.new(0, 99999, 0)
-        bv.Velocity = Vector3.new(0, 50, 0)
-        task.wait(1.5)
-        bv:Destroy()
-        f:Destroy()
-        GodMode(false)
+        for i = 1, 20 do
+            hrp.CFrame = hrp.CFrame * CFrame.new(0, 2.5, 0)
+            task.wait(0.03)
+        end
     end
 end)
 
-CmdBtn("Balloon (Immortal)", UDim2.new(0, 10, 0, 270), function()
+CmdBtn("Balloon (Head Scale)", UDim2.new(0, 10, 0, 270), function()
     local head = player.Character:FindFirstChild("Head")
     local hrp = player.Character:FindFirstChild("HumanoidRootPart")
     if head and hrp then
-        GodMode(true)
-        local m = head:FindFirstChildOfClass("SpecialMesh") or Instance.new("SpecialMesh", head)
-        m.Scale = Vector3.new(3.5, 3.5, 3.5)
-        local bv = Instance.new("BodyVelocity", hrp)
-        bv.MaxForce = Vector3.new(0, 25000, 0)
-        bv.Velocity = Vector3.new(0, 18, 0)
-        task.wait(4)
-        bv:Destroy()
-        m.Scale = Vector3.new(1, 1, 1)
-        GodMode(false)
+        local mesh = head:FindFirstChildOfClass("SpecialMesh")
+        if mesh then
+            mesh.Scale = Vector3.new(3, 3, 3)
+            local bv = Instance.new("BodyVelocity", hrp)
+            bv.MaxForce = Vector3.new(0, 9000, 0)
+            bv.Velocity = Vector3.new(0, 15, 0)
+            task.wait(4)
+            bv:Destroy()
+            mesh.Scale = Vector3.new(1, 1, 1)
+        end
     end
 end)
 
-CmdBtn("Force Jump 3x (Fix)", UDim2.new(0, 10, 0, 315), function()
+CmdBtn("Force Jump 3x (Safe)", UDim2.new(0, 10, 0, 315), function()
     for _, p in pairs(GetTarget()) do
-        if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+        if p ~= player and p.Character and p.Character:FindFirstChild("Humanoid") then
             task.spawn(function()
                 for i = 1, 3 do
-                    local bv = Instance.new("BodyVelocity", p.Character.HumanoidRootPart)
-                    bv.MaxForce = Vector3.new(0, 9e9, 0)
-                    bv.Velocity = Vector3.new(0, 50, 0)
-                    task.wait(0.2)
-                    bv:Destroy()
-                    task.wait(0.6)
+                    p.Character.Humanoid.Jump = true
+                    task.wait(0.7)
                 end
             end)
         end
     end
 end)
 
-CmdBtn("Jail (Invisível)", UDim2.new(0, 10, 0, 360), function()
-    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-    if hrp then
-        local cage = Instance.new("Part", workspace)
-        cage.Size = Vector3.new(10, 12, 10)
-        cage.CFrame = hrp.CFrame
-        cage.Transparency = 1
-        cage.Anchored = true
-        cage.CanCollide = true
-        task.wait(5)
-        cage:Destroy()
+CmdBtn("Jail Target (5 Seg)", UDim2.new(0, 10, 0, 360), function()
+    local targets = GetTarget()
+    for _, t in pairs(targets) do
+        if t.Character and t.Character:FindFirstChild("HumanoidRootPart") then
+            local hrp = t.Character.HumanoidRootPart
+            local oldCF = hrp.CFrame
+            local start = tick()
+            while tick() - start < 5 do
+                hrp.CFrame = oldCF
+                task.wait(0.1)
+            end
+        end
     end
 end)
 
