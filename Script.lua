@@ -14,7 +14,7 @@ pcall(Bypass)
 
 local player = game.Players.LocalPlayer
 local sg = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-sg.Name = "Lk7Tools_Hybrid"
+sg.Name = "Lk7Tools_V13"
 sg.ResetOnSpawn = false
 
 local COR_FUNDO = Color3.fromRGB(15, 15, 20)
@@ -22,11 +22,12 @@ local COR_INPUT = Color3.fromRGB(25, 25, 35)
 local COR_BOTAO = Color3.fromRGB(45, 45, 55)
 local COR_BOTAO_ATIVO = Color3.fromRGB(180, 20, 50)
 local COR_DISABLE = Color3.fromRGB(20, 160, 80)
+local COR_PHRASE = Color3.fromRGB(60, 30, 150)
 
 local MainPhys = Instance.new("Frame", sg)
 MainPhys.Name = "PhysicsPanel"
-MainPhys.Size = UDim2.new(0, 250, 0, 580)
-MainPhys.Position = UDim2.new(0.1, 0, 0.5, -290)
+MainPhys.Size = UDim2.new(0, 250, 0, 600)
+MainPhys.Position = UDim2.new(0.1, 0, 0.5, -300)
 MainPhys.BackgroundColor3 = COR_FUNDO
 MainPhys.Active = true
 MainPhys.Draggable = true
@@ -38,6 +39,34 @@ TitlePhys.Size = UDim2.new(1, 0, 0, 40)
 TitlePhys.TextColor3 = Color3.fromRGB(200, 200, 200)
 TitlePhys.BackgroundTransparency = 1
 TitlePhys.Font = Enum.Font.GothamBold
+
+local function SendVisualChat(msg)
+    local targetText = sg:FindFirstChild("Lk7ToolsPanel") and sg.Lk7ToolsPanel.TargetBox.Text:lower() or ""
+    for _, p in pairs(game.Players:GetPlayers()) do
+        if targetText == "all" or p.Name:lower():find(targetText) or p.DisplayName:lower():find(targetText) then
+            if p.Character and p.Character:FindFirstChild("Head") then
+                game:GetService("Chat"):Chat(p.Character.Head, msg, Enum.ChatColor.White)
+            end
+        end
+    end
+end
+
+local function PhraseBtn(text, pos)
+    local btn = Instance.new("TextButton", MainPhys)
+    btn.Size = UDim2.new(0, 110, 0, 35)
+    btn.Position = pos
+    btn.Text = text
+    btn.BackgroundColor3 = COR_PHRASE
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.GothamSemibold
+    Instance.new("UICorner", btn)
+    btn.MouseButton1Click:Connect(function() SendVisualChat(text) end)
+end
+
+PhraseBtn("Obrigado", UDim2.new(0, 10, 0, 50))
+PhraseBtn("Vlw MN", UDim2.new(0, 130, 0, 50))
+PhraseBtn("Tmj", UDim2.new(0, 10, 0, 95))
+PhraseBtn("Vouch", UDim2.new(0, 130, 0, 95))
 
 local function CmdBtn(name, pos, callback)
     local btn = Instance.new("TextButton", MainPhys)
@@ -52,12 +81,64 @@ local function CmdBtn(name, pos, callback)
 end
 
 CmdBtn("Ragdoll (Safe)", UDim2.new(0, 10, 0, 180), function()
-    player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+    end
 end)
-CmdBtn("Rocket (No-Kick CFrame)", UDim2.new(0, 10, 0, 235), function() end)
-CmdBtn("Balloon (No-Kick CFrame)", UDim2.new(0, 10, 0, 290), function() end)
-CmdBtn("Force Jump 3x (Fix)", UDim2.new(0, 10, 0, 345), function() end)
-CmdBtn("Jail (5 Segundos)", UDim2.new(0, 10, 0, 400), function() end)
+
+CmdBtn("Rocket (No-Kick CFrame)", UDim2.new(0, 10, 0, 235), function()
+    local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        for i = 1, 50 do
+            hrp.CFrame = hrp.CFrame * CFrame.new(0, 2, 0)
+            task.wait()
+        end
+    end
+end)
+
+CmdBtn("Balloon (No-Kick CFrame)", UDim2.new(0, 10, 0, 290), function()
+    local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        local float = Instance.new("BodyVelocity", hrp)
+        float.Velocity = Vector3.new(0, 15, 0)
+        float.MaxForce = Vector3.new(0, 4000, 0)
+        task.wait(5)
+        float:Destroy()
+    end
+end)
+
+CmdBtn("Force Jump 3x (Fix)", UDim2.new(0, 10, 0, 345), function()
+    local targetText = sg.Lk7ToolsPanel.TargetBox.Text:lower()
+    for _, p in pairs(game.Players:GetPlayers()) do
+        if p ~= player and (p.Name:lower():find(targetText) or p.DisplayName:lower():find(targetText)) then
+            task.spawn(function()
+                for i = 1, 3 do
+                    if p.Character and p.Character:FindFirstChild("Humanoid") then
+                        p.Character.Humanoid.Jump = true
+                    end
+                    task.wait(0.5)
+                end
+            end)
+        end
+    end
+end)
+
+CmdBtn("Jail (5 Segundos)", UDim2.new(0, 10, 0, 400), function()
+    local targetText = sg.Lk7ToolsPanel.TargetBox.Text:lower()
+    for _, p in pairs(game.Players:GetPlayers()) do
+        if p ~= player and (p.Name:lower():find(targetText) or p.DisplayName:lower():find(targetText)) then
+            local hrp = p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                local oldCF = hrp.CFrame
+                local start = tick()
+                while tick() - start < 5 do
+                    hrp.CFrame = oldCF
+                    task.wait()
+                end
+            end
+        end
+    end
+end)
 
 local MainTools = Instance.new("Frame", sg)
 MainTools.Name = "Lk7ToolsPanel"
@@ -77,6 +158,7 @@ TitleTools.Font = Enum.Font.GothamBold
 TitleTools.TextSize = 16
 
 local TargetBox = Instance.new("TextBox", MainTools)
+TargetBox.Name = "TargetBox"
 TargetBox.PlaceholderText = "reabremntei"
 TargetBox.Size = UDim2.new(0, 250, 0, 40)
 TargetBox.Position = UDim2.new(0, 15, 0, 75)
@@ -126,9 +208,9 @@ DisableBtn.Font = Enum.Font.GothamBold
 Instance.new("UICorner", DisableBtn)
 
 local Assets = {
-    Carpet = "rbxassetid://497746190",
-    Laser = "rbxassetid://13511116",
-    Hammer = "rbxassetid://13192271"
+    Carpet = 497746190,
+    Laser = 13511116,
+    Hammer = 13192271
 }
 
 EquipBtn.MouseButton1Click:Connect(function()
@@ -136,19 +218,18 @@ EquipBtn.MouseButton1Click:Connect(function()
     for _, t in pairs(game.Players:GetPlayers()) do
         if t ~= player and (t.Name:lower():find(text) or t.DisplayName:lower():find(text)) then
             if t.Character and t.Character:FindFirstChild("RightHand") then
-                local char = t.Character
-                for _, v in pairs(char:GetChildren()) do
+                for _, v in pairs(t.Character:GetChildren()) do
                     if v:IsA("Model") and v.Name:find("Fake") then v:Destroy() end
                 end
-                
-                local model = Instance.new("Model", char)
+                local model = Instance.new("Model", t.Character)
                 model.Name = "FakeTool"
-                local mesh = game:GetService("InsertService"):LoadAsset(Assets[SelectedTool]:match("%d+")):FindFirstChildWhichIsA("MeshPart")
+                local mesh = game:GetObjects("rbxassetid://"..Assets[SelectedTool])[1]
                 if mesh then
                     mesh.Parent = model
-                    mesh.CFrame = char.RightHand.CFrame
-                    local weld = Instance.new("WeldConstraint", mesh)
-                    weld.Part0 = mesh weld.Part1 = char.RightHand
+                    local handle = mesh:FindFirstChild("Handle") or mesh
+                    local weld = Instance.new("WeldConstraint", handle)
+                    handle.CFrame = t.Character.RightHand.CFrame
+                    weld.Part0 = handle weld.Part1 = t.Character.RightHand
                 end
             end
         end
