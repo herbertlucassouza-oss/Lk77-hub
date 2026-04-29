@@ -1,107 +1,126 @@
 local player = game.Players.LocalPlayer
 local sg = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-sg.Name = "Lk7Panel"
+sg.Name = "Lk7Hub"
 sg.ResetOnSpawn = false
 
 local VALOR_ROBUX = 11284
 local TECLA_TOGGLE = Enum.KeyCode.P
 
 local Main = Instance.new("Frame", sg)
-Main.Size = UDim2.new(0, 220, 0, 360)
-Main.Position = UDim2.new(0.5, -110, 0.5, -180)
-Main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+Main.Size = UDim2.new(0, 250, 0, 480)
+Main.Position = UDim2.new(0.5, -125, 0.5, -240)
+Main.BackgroundColor3 = Color3.fromRGB(20, 15, 30)
 Main.BorderSizePixel = 0
 Main.Active = true
 Main.Draggable = true
-
-local Corner = Instance.new("UICorner", Main)
-Corner.CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 10)
 
 local Title = Instance.new("TextLabel", Main)
-Title.Text = "Fake Robux lk7"
-Title.Size = UDim2.new(1, -20, 0, 30)
-Title.Position = UDim2.new(0, 10, 0, 5)
+Title.Text = "Fake Robux lk7 - Chat PV"
+Title.Size = UDim2.new(1, 0, 0, 30)
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.BackgroundTransparency = 1
-Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Font = Enum.Font.GothamBold
 
-local function CreateButton(name, pos, callback)
+local TargetBox = Instance.new("TextBox", Main)
+TargetBox.PlaceholderText = "Jogador (all / nome)"
+TargetBox.Size = UDim2.new(0, 230, 0, 30)
+TargetBox.Position = UDim2.new(0, 10, 0, 40)
+TargetBox.BackgroundColor3 = Color3.fromRGB(40, 30, 50)
+TargetBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+Instance.new("UICorner", TargetBox)
+
+local function SendVisualChat(msg)
+    local targetText = TargetBox.Text:lower()
+    for _, p in pairs(game.Players:GetPlayers()) do
+        if targetText == "all" or p.Name:lower():find(targetText) then
+            if p.Character and p.Character:FindFirstChild("Head") then
+                game:GetService("Chat"):Chat(p.Character.Head, msg, Enum.ChatColor.White)
+            end
+        end
+    end
+end
+
+local function PhraseBtn(text, pos)
     local btn = Instance.new("TextButton", Main)
-    btn.Size = UDim2.new(0, 140, 0, 35)
+    btn.Size = UDim2.new(0, 110, 0, 30)
     btn.Position = pos
-    btn.Text = name
+    btn.Text = text
     btn.BackgroundColor3 = Color3.fromRGB(80, 40, 150)
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     btn.Font = Enum.Font.GothamSemibold
-    local c = Instance.new("UICorner", btn)
-    c.CornerRadius = UDim.new(0, 6)
-    btn.MouseButton1Click:Connect(callback)
-    return btn
+    Instance.new("UICorner", btn)
+    btn.MouseButton1Click:Connect(function() SendVisualChat(text) end)
 end
 
-CreateButton("Ragdoll", UDim2.new(0, 10, 0, 70), function()
-    local char = player.Character
-    if char and char:FindFirstChild("Humanoid") then
-        char.Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+PhraseBtn("Obrigado", UDim2.new(0, 10, 0, 80))
+PhraseBtn("Chegouuu", UDim2.new(0, 130, 0, 80))
+PhraseBtn("Tmjjj MN", UDim2.new(0, 10, 0, 120))
+PhraseBtn("vouch", UDim2.new(0, 130, 0, 120))
+
+local Line = Instance.new("Frame", Main)
+Line.Size = UDim2.new(0, 230, 0, 2)
+Line.Position = UDim2.new(0, 10, 0, 165)
+Line.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+Line.BorderSizePixel = 0
+
+local function CmdBtn(name, pos, callback)
+    local btn = Instance.new("TextButton", Main)
+    btn.Size = UDim2.new(0, 230, 0, 35)
+    btn.Position = pos
+    btn.Text = name
+    btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Instance.new("UICorner", btn)
+    btn.MouseButton1Click:Connect(callback)
+end
+
+CmdBtn("Ragdoll", UDim2.new(0, 10, 0, 180), function()
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
     end
 end)
 
-CreateButton("Rocket", UDim2.new(0, 10, 0, 110), function()
-    local char = player.Character
-    local hrp = char:FindFirstChild("HumanoidRootPart")
+CmdBtn("Rocket", UDim2.new(0, 10, 0, 225), function()
+    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
     if hrp then
-        local fire = Instance.new("Fire", hrp)
-        fire.Size = 10
+        local f = Instance.new("Fire", hrp)
         local bv = Instance.new("BodyVelocity", hrp)
         bv.Velocity = Vector3.new(0, 100, 0)
         bv.MaxForce = Vector3.new(0, 50000, 0)
         task.wait(1.5)
-        fire:Destroy()
+        f:Destroy()
         bv:Destroy()
     end
 end)
 
-CreateButton("Balloon", UDim2.new(0, 10, 0, 150), function()
-    local char = player.Character
-    local head = char:FindFirstChild("Head")
-    local hrp = char:FindFirstChild("HumanoidRootPart")
+CmdBtn("Balloon", UDim2.new(0, 10, 0, 270), function()
+    local head = player.Character:FindFirstChild("Head")
+    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
     if head and hrp then
-        local originalSize = head:FindFirstChild("Mesh") and head.Mesh.Scale or Vector3.new(1,1,1)
-        local mesh = head:FindFirstChildOfClass("SpecialMesh") or Instance.new("SpecialMesh", head)
-        
-        mesh.Scale = Vector3.new(5, 5, 5)
-        local bf = Instance.new("BodyForce", hrp)
-        bf.Force = Vector3.new(0, 3000, 0)
-        
+        local m = head:FindFirstChildOfClass("SpecialMesh") or Instance.new("SpecialMesh", head)
+        local old = m.Scale
+        m.Scale = Vector3.new(4, 4, 4)
+        local bv = Instance.new("BodyVelocity", hrp)
+        bv.Velocity = Vector3.new(0, 15, 0)
+        bv.MaxForce = Vector3.new(0, 40000, 0)
         task.wait(4)
-        mesh.Scale = originalSize
-        bf:Destroy()
+        m.Scale = old
+        bv:Destroy()
     end
 end)
 
-CreateButton("Toggle GUI", UDim2.new(0, 10, 0, 270), function()
-    Main.Visible = false
-end)
-
-local RobuxText = Instance.new("TextLabel", Main)
-RobuxText.Text = "Robux:"
-RobuxText.Size = UDim2.new(0, 50, 0, 30)
-RobuxText.Position = UDim2.new(0, 10, 0, 325)
-RobuxText.TextColor3 = Color3.fromRGB(200, 200, 0)
-RobuxText.Font = Enum.Font.GothamBold
-RobuxText.BackgroundTransparency = 1
-
-local RobuxAmount = Instance.new("TextLabel", Main)
-RobuxAmount.Text = tostring(VALOR_ROBUX)
-RobuxAmount.Size = UDim2.new(0, 50, 0, 30)
-RobuxAmount.Position = UDim2.new(0, 150, 0, 325)
-RobuxAmount.TextColor3 = Color3.fromRGB(255, 255, 0)
-RobuxAmount.Font = Enum.Font.GothamBold
-RobuxAmount.BackgroundTransparency = 1
+local RobuxLabel = Instance.new("TextLabel", Main)
+RobuxLabel.Text = "Robux: " .. VALOR_ROBUX
+RobuxLabel.Position = UDim2.new(0, 10, 0, 440)
+RobuxLabel.Size = UDim2.new(1, -20, 0, 30)
+RobuxLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+RobuxLabel.Font = Enum.Font.GothamBold
+RobuxLabel.BackgroundTransparency = 1
 
 game:GetService("UserInputService").InputBegan:Connect(function(input, gpe)
     if not gpe and input.KeyCode == TECLA_TOGGLE then
         Main.Visible = not Main.Visible
     end
 end)
+
