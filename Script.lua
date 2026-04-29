@@ -1,6 +1,6 @@
 local player = game.Players.LocalPlayer
 local sg = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-sg.Name = "TskPanel"
+sg.Name = "Lk7Panel"
 sg.ResetOnSpawn = false
 
 local VALOR_ROBUX = 11284
@@ -18,7 +18,7 @@ local Corner = Instance.new("UICorner", Main)
 Corner.CornerRadius = UDim.new(0, 10)
 
 local Title = Instance.new("TextLabel", Main)
-Title.Text = "Tsk Fake Robux"
+Title.Text = "Fake Robux lk7"
 Title.Size = UDim2.new(1, -20, 0, 30)
 Title.Position = UDim2.new(0, 10, 0, 5)
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -34,10 +34,8 @@ local function CreateButton(name, pos, callback)
     btn.BackgroundColor3 = Color3.fromRGB(80, 40, 150)
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     btn.Font = Enum.Font.GothamSemibold
-    
     local c = Instance.new("UICorner", btn)
     c.CornerRadius = UDim.new(0, 6)
-    
     btn.MouseButton1Click:Connect(callback)
     return btn
 end
@@ -50,22 +48,34 @@ CreateButton("Ragdoll", UDim2.new(0, 10, 0, 70), function()
 end)
 
 CreateButton("Rocket", UDim2.new(0, 10, 0, 110), function()
-    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+    local char = player.Character
+    local hrp = char:FindFirstChild("HumanoidRootPart")
     if hrp then
+        local fire = Instance.new("Fire", hrp)
+        fire.Size = 10
         local bv = Instance.new("BodyVelocity", hrp)
         bv.Velocity = Vector3.new(0, 100, 0)
         bv.MaxForce = Vector3.new(0, 50000, 0)
-        task.wait(0.5)
+        task.wait(1.5)
+        fire:Destroy()
         bv:Destroy()
     end
 end)
 
 CreateButton("Balloon", UDim2.new(0, 10, 0, 150), function()
-    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-    if hrp then
+    local char = player.Character
+    local head = char:FindFirstChild("Head")
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if head and hrp then
+        local originalSize = head:FindFirstChild("Mesh") and head.Mesh.Scale or Vector3.new(1,1,1)
+        local mesh = head:FindFirstChildOfClass("SpecialMesh") or Instance.new("SpecialMesh", head)
+        
+        mesh.Scale = Vector3.new(5, 5, 5)
         local bf = Instance.new("BodyForce", hrp)
-        bf.Force = Vector3.new(0, 2500, 0)
-        task.wait(3)
+        bf.Force = Vector3.new(0, 3000, 0)
+        
+        task.wait(4)
+        mesh.Scale = originalSize
         bf:Destroy()
     end
 end)
