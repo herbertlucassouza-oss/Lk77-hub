@@ -1,3 +1,17 @@
+local mt = getrawmetatable(game)
+local old = mt.__namecall
+if setreadonly then setreadonly(mt, false) else make_writeable(mt) end
+
+mt.__namecall = newcclosure(function(self, ...)
+    local method = getnamecallmethod()
+    if method == "Kick" or method == "kick" then
+        return nil
+    end
+    return old(self, ...)
+end)
+
+if setreadonly then setreadonly(mt, true) else make_readonly(mt) end
+
 local player = game.Players.LocalPlayer
 local sg = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 sg.Name = "Lk7Hub"
@@ -16,7 +30,7 @@ Main.Draggable = true
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 10)
 
 local Title = Instance.new("TextLabel", Main)
-Title.Text = "Fake Robux lk7 - Chat PV"
+Title.Text = "Fake Robux lk7 - Anti-Kick"
 Title.Size = UDim2.new(1, 0, 0, 30)
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.BackgroundTransparency = 1
@@ -81,30 +95,30 @@ CmdBtn("Ragdoll", UDim2.new(0, 10, 0, 180), function()
     end
 end)
 
-CmdBtn("Rocket", UDim2.new(0, 10, 0, 225), function()
+CmdBtn("Rocket (Safe)", UDim2.new(0, 10, 0, 225), function()
     local hrp = player.Character:FindFirstChild("HumanoidRootPart")
     if hrp then
         local f = Instance.new("Fire", hrp)
         local bv = Instance.new("BodyVelocity", hrp)
-        bv.Velocity = Vector3.new(0, 100, 0)
-        bv.MaxForce = Vector3.new(0, 50000, 0)
-        task.wait(1.5)
+        bv.Velocity = Vector3.new(0, 40, 0)
+        bv.MaxForce = Vector3.new(0, 9000, 0)
+        task.wait(1)
         f:Destroy()
         bv:Destroy()
     end
 end)
 
-CmdBtn("Balloon", UDim2.new(0, 10, 0, 270), function()
+CmdBtn("Balloon (Safe)", UDim2.new(0, 10, 0, 270), function()
     local head = player.Character:FindFirstChild("Head")
     local hrp = player.Character:FindFirstChild("HumanoidRootPart")
     if head and hrp then
         local m = head:FindFirstChildOfClass("SpecialMesh") or Instance.new("SpecialMesh", head)
         local old = m.Scale
-        m.Scale = Vector3.new(4, 4, 4)
+        m.Scale = Vector3.new(3, 3, 3)
         local bv = Instance.new("BodyVelocity", hrp)
-        bv.Velocity = Vector3.new(0, 15, 0)
-        bv.MaxForce = Vector3.new(0, 40000, 0)
-        task.wait(4)
+        bv.Velocity = Vector3.new(0, 10, 0)
+        bv.MaxForce = Vector3.new(0, 8000, 0)
+        task.wait(3)
         m.Scale = old
         bv:Destroy()
     end
@@ -123,4 +137,3 @@ game:GetService("UserInputService").InputBegan:Connect(function(input, gpe)
         Main.Visible = not Main.Visible
     end
 end)
-
