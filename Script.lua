@@ -128,13 +128,13 @@ CmdBtn("Ragdoll (Stealth)", UDim2.new(0, 10, 0, 180), function()
     end
 end)
 
-CmdBtn("Rocket (Stealth)", UDim2.new(0, 10, 0, 225), function()
+CmdBtn("Rocket (Stealth V6)", UDim2.new(0, 10, 0, 225), function()
     local hrp = player.Character:FindFirstChild("HumanoidRootPart")
     if hrp then
         local gyro = ApplyStealthStraight()
         local f = Instance.new("Fire", hrp)
-        for i = 1, 15 do
-            hrp.Velocity = Vector3.new(0, 45, 0)
+        for i = 1, 20 do
+            hrp.Velocity = Vector3.new(0, 65, 0)
             task.wait(0.05)
         end
         f:Destroy()
@@ -142,15 +142,15 @@ CmdBtn("Rocket (Stealth)", UDim2.new(0, 10, 0, 225), function()
     end
 end)
 
-CmdBtn("Balloon (Stealth)", UDim2.new(0, 10, 0, 270), function()
+CmdBtn("Balloon (Stealth V6)", UDim2.new(0, 10, 0, 270), function()
     local head = player.Character:FindFirstChild("Head")
     local hrp = player.Character:FindFirstChild("HumanoidRootPart")
     if head and hrp then
         local gyro = ApplyStealthStraight()
         local m = head:FindFirstChildOfClass("SpecialMesh") or Instance.new("SpecialMesh", head)
         m.Scale = Vector3.new(3.5, 3.5, 3.5)
-        for i = 1, 50 do
-            hrp.Velocity = Vector3.new(0, 12, 0)
+        for i = 1, 60 do
+            hrp.Velocity = Vector3.new(0, 25, 0)
             task.wait(0.05)
         end
         m.Scale = Vector3.new(1, 1, 1)
@@ -158,7 +158,6 @@ CmdBtn("Balloon (Stealth)", UDim2.new(0, 10, 0, 270), function()
     end
 end)
 
--- CORREÇÃO DO FORCE JUMP
 CmdBtn("Force Jump 3x (Visual Fix)", UDim2.new(0, 10, 0, 315), function()
     for _, p in pairs(GetTarget()) do
         if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
@@ -167,11 +166,11 @@ CmdBtn("Force Jump 3x (Visual Fix)", UDim2.new(0, 10, 0, 315), function()
                     local hrp = p.Character.HumanoidRootPart
                     local bv = Instance.new("BodyVelocity")
                     bv.Parent = hrp
-                    bv.MaxForce = Vector3.new(0, 999999, 0) -- Força extrema para subir
-                    bv.Velocity = Vector3.new(0, 50, 0) -- Velocidade de pulo
-                    task.wait(0.3) -- Tempo de subida
+                    bv.MaxForce = Vector3.new(0, 999999, 0)
+                    bv.Velocity = Vector3.new(0, 50, 0)
+                    task.wait(0.3)
                     bv:Destroy()
-                    task.wait(0.6) -- Tempo de queda
+                    task.wait(0.6)
                 end
             end)
         end
